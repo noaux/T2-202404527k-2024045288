@@ -22,8 +22,8 @@ Para hacer funcionar correctamente nuestro proyecto trabajamos con XAMMP (MariaD
    * Mueva la carpeta con los archivos `.php` junto con la imagen `.jpg` al directorio raíz de su servidor web.
    * Verifique que en el archivo `conexion.php` las credenciales correspondan a las de su servidor local (por defecto `root` sin contraseña).
 
-3. **Ejecutar la Plataforma:**
-   * Abra su navegador web e ingrese a la ruta del proyecto: `http://localhost/T2-2024045288-202404527K/login.php`.
+4. **Ejecutar la Plataforma:**
+   * Abra su navegador web e ingrese a la ruta del proyecto: `http://localhost/Tarea_2/login.php`.
 
 ---
 
@@ -34,13 +34,12 @@ El script de base de datos genera usuarios listos para probar los tres roles del
   * **Email:** `admin@saludusm.cl`
   * **Contraseña:** `Admin123!`
 
-* **ROL 2 - Médico (Ejemplo: Dr. Juan Silva)**
+* **ROL 2 - Médico**
   * **Email:** `jsilva@clinica.cl`
   * **Contraseña:** `Medico123!`
-  * *(El sistema cuenta con 15 médicos de prueba en total, todos comparten la misma contraseña `Medico123!`).*
 
 * **ROL 1 - Paciente**
-  * **Email:** `paciente1@correo.cl` (Puede usar desde paciente1 hasta `paciente40@correo.cl`)
+  * **Email:** `paciente1@correo.cl`
   * **Contraseña:** `Paciente123!`
 
 ---
@@ -51,7 +50,7 @@ El script de base de datos genera usuarios listos para probar los tres roles del
   Para registrar a un nuevo paciente, la contraseña debe cumplir estrictamente con los siguientes requisitos definidos en el sistema:
   1. Longitud mínima de **8 caracteres**.
   2. Al menos **una letra mayúscula**.
-  3. Al menos **un símbolo** (carácter especial no alfanumérico).
+  3. Al menos **un símbolo**.
 
 * **Horarios de Atención y Duración de Bloques:**
   * **Horario de atención:** De 09:00 a 17:00 hrs.
