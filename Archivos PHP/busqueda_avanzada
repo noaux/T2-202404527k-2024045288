@@ -1,0 +1,241 @@
+<?php
+session_start();
+
+// Validar seguridad: Solo el Administrador (Rol 3) puede entrar aquí
+if (!isset($_SESSION['id_rol']) || $_SESSION['id_rol'] != 3) {
+    header("Location: index.php");
+    exit();
+}
+
+require 'conexion.php';
+
+// 1. Obtener datos para llenar las listas desplegables (combobox)
+$regiones = $conn->query("SELECT DISTINCT region FROM centro_medico ORDER BY region ASC");
+$centros = $conn->query("SELECT codigo_interno, nombre FROM centro_medico");
+$especialidades = $conn->query("SELECT id_especialidad, nom_especialidad FROM especialidad");
+$medicos = $conn->query("SELECT rut_medico, nom_completo FROM medico");
+$estados = $conn->query("SELECT id_estado, nom_estado FROM estado_cita");
+$previsiones = $conn->query("SELECT nom_prevision FROM prevision");
+
+// 2. Construir la consulta dinámica basada en los filtros ingresados
+$sql = "SELECT * FROM vista_resumen_citas WHERE 1=1";
+
+// Filtro de Región
+if (!empty($_GET['region'])) {
+    $region = $conn->real_escape_string($_GET['region']);
+    $sql .= " AND region = '$region'";
+}
+
+// Filtro de Centro Médico
+if (!empty($_GET['centro'])) {
+    $centro = $conn->real_escape_string($_GET['centro']);
+    $sql .= " AND cod_centro = '$centro'";
+}
+
+// Filtro de Especialidad
+if (!empty($_GET['especialidad'])) {
+    $esp = (int)$_GET['especialidad'];
+    $sql .= " AND id_especialidad = $esp";
+}
+
+// Filtro de Médico
+if (!empty($_GET['medico'])) {
+    $med = $conn->real_escape_string($_GET['medico']);
+    $sql .= " AND rut_medico = '$med'";
+}
+
+// Filtro de Estado de Cita
+if (!empty($_GET['estado'])) {
+    $est = (int)$_GET['estado'];
+    $sql .= " AND id_estado = $est";
+}
+
+// Filtro de Previsión
+if (!empty($_GET['prevision'])) {
+    $prev = $conn->real_escape_string($_GET['prevision']);
+    $sql .= " AND prevision = '$prev'";
+}
+
+// Rango de Fechas
+if (!empty($_GET['fecha_inicio'])) {
+    $fecha_ini = $conn->real_escape_string($_GET['fecha_inicio']);
+    $sql .= " AND DATE(fecha_hora) >= '$fecha_ini'";
+}
+if (!empty($_GET['fecha_fin'])) {
+    $fecha_fin = $conn->real_escape_string($_GET['fecha_fin']);
+    $sql .= " AND DATE(fecha_hora) <= '$fecha_fin'";
+}
+
+$sql .= " ORDER BY fecha_hora DESC";
+$resultados = $conn->query($sql);
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Búsqueda Avanzada - SaludUSM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light pb-5">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+    <div class="container">
+        <span class="navbar-brand mb-0 h1">Panel de Gestión | Búsqueda Avanzada</span>
+        <a href="index.php" class="btn btn-outline-light btn-sm">Volver al Inicio</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card shadow-sm mb-4 border-dark">
+        <div class="card-body">
+            <form method="GET" action="busqueda_avanzada.php" class="row g-3">
+                
+                <!-- Fila 1 de Filtros -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small mb-1">Región</label>
+                    <select name="region" class="form-select form-select-sm">
+                        <option value="">Todas</option>
+                        <?php while($row = $regiones->fetch_assoc()): ?>
+                            <option value="<?php echo $row['region']; ?>" <?php echo (isset($_GET['region']) && $_GET['region'] == $row['region']) ? 'selected' : ''; ?>>
+                                <?php echo $row['region']; ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label text-muted small mb-1">Centro Médico</label>
+                    <select name="centro" class="form-select form-select-sm">
+                        <option value="">Todos los centros</option>
+                        <?php while($row = $centros->fetch_assoc()): ?>
+                            <option value="<?php echo $row['codigo_interno']; ?>" <?php echo (isset($_GET['centro']) && $_GET['centro'] == $row['codigo_interno']) ? 'selected' : ''; ?>>
+                                <?php echo $row['nombre']; ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label text-muted small mb-1">Especialidad</label>
+                    <select name="especialidad" class="form-select form-select-sm">
+                        <option value="">Todas las especialidades</option>
+                        <?php while($row = $especialidades->fetch_assoc()): ?>
+                            <option value="<?php echo $row['id_especialidad']; ?>" <?php echo (isset($_GET['especialidad']) && $_GET['especialidad'] == $row['id_especialidad']) ? 'selected' : ''; ?>>
+                                <?php echo $row['nom_especialidad']; ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label text-muted small mb-1">Médico</label>
+                    <select name="medico" class="form-select form-select-sm">
+                        <option value="">Todos los médicos</option>
+                        <?php while($row = $medicos->fetch_assoc()): ?>
+                            <option value="<?php echo $row['rut_medico']; ?>" <?php echo (isset($_GET['medico']) && $_GET['medico'] == $row['rut_medico']) ? 'selected' : ''; ?>>
+                                <?php echo $row['nom_completo']; ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+
+                <!-- Fila 2 de Filtros -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted small mb-1">Previsión</label>
+                    <select name="prevision" class="form-select form-select-sm">
+                        <option value="">Todas</option>
+                        <?php while($row = $previsiones->fetch_assoc()): ?>
+                            <option value="<?php echo $row['nom_prevision']; ?>" <?php echo (isset($_GET['prevision']) && $_GET['prevision'] == $row['nom_prevision']) ? 'selected' : ''; ?>>
+                                <?php echo $row['nom_prevision']; ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label text-muted small mb-1">Estado de Cita</label>
+                    <select name="estado" class="form-select form-select-sm">
+                        <option value="">Todos los estados</option>
+                        <?php while($row = $estados->fetch_assoc()): ?>
+                            <option value="<?php echo $row['id_estado']; ?>" <?php echo (isset($_GET['estado']) && $_GET['estado'] == $row['id_estado']) ? 'selected' : ''; ?>>
+                                <?php echo $row['nom_estado']; ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label text-muted small mb-1">Desde Fecha</label>
+                    <input type="date" name="fecha_inicio" class="form-control form-control-sm" value="<?php echo isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : ''; ?>">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label text-muted small mb-1">Hasta Fecha</label>
+                    <input type="date" name="fecha_fin" class="form-control form-control-sm" value="<?php echo isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : ''; ?>">
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-dark btn-sm me-2 w-100">Aplicar Filtros</button>
+                    <a href="busqueda_avanzada.php" class="btn btn-outline-secondary btn-sm w-100">Limpiar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TABLA DE RESULTADOS -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="mb-0 text-secondary">Resultados de la Búsqueda <span class="badge bg-primary rounded-pill fs-6 ms-2"><?php echo $resultados->num_rows; ?></span></h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-3">Fecha y Hora</th>
+                            <th>Paciente</th>
+                            <th>Previsión</th>
+                            <th>Médico</th>
+                            <th>Especialidad</th>
+                            <th>Centro Médico (Región)</th>
+                            <th class="text-center pe-3">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($resultados->num_rows > 0): ?>
+                            <?php while($cita = $resultados->fetch_assoc()): ?>
+                                <tr>
+                                    <td class="ps-3 fw-semibold"><?php echo date('d-m-Y H:i', strtotime($cita['fecha_hora'])); ?></td>
+                                    <td><?php echo $cita['paciente']; ?> <br><small class="text-muted"><?php echo $cita['rut_paciente']; ?></small></td>
+                                    <td><?php echo $cita['prevision']; ?></td>
+                                    <td><?php echo $cita['medico']; ?></td>
+                                    <td><?php echo $cita['especialidad']; ?></td>
+                                    <td><?php echo $cita['centro_medico']; ?> <br><small class="text-muted"><?php echo $cita['region']; ?></small></td>
+                                    <td class="text-center pe-3">
+                                        <?php 
+                                            $color = 'bg-secondary';
+                                            if ($cita['estado'] == 'Confirmada') $color = 'bg-primary';
+                                            if ($cita['estado'] == 'Atendida') $color = 'bg-success';
+                                            if ($cita['estado'] == 'No Asistió') $color = 'bg-danger';
+                                            if ($cita['estado'] == 'Cancelada') $color = 'bg-warning text-dark';
+                                        ?>
+                                        <span class="badge <?php echo $color; ?>"><?php echo $cita['estado']; ?></span>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">No se encontraron citas con los filtros aplicados.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
