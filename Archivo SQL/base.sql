@@ -1,6 +1,6 @@
--- ==========================================================
--- 1. LIMPIEZA INICIAL (Hace que el script se pueda re-ejecutar sin errores)
--- ==========================================================
+
+-- 1. LIMPIEZA INICIAL
+
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Borrar tablas
@@ -13,9 +13,9 @@ DROP FUNCTION IF EXISTS fn_puede_agregar_especialidad;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ==========================================================
--- 2. CREACIÓN DE TABLAS DE SEGURIDAD (Login)
--- ==========================================================
+
+-- 2. CREACIÓN DE TABLAS DE SEGURIDAD
+
 CREATE TABLE rol (
     id_rol INT AUTO_INCREMENT PRIMARY KEY,
     nombre_rol VARCHAR(50) UNIQUE NOT NULL
@@ -29,9 +29,9 @@ CREATE TABLE usuario (
     FOREIGN KEY (id_rol) REFERENCES rol(id_rol) ON DELETE RESTRICT
 );
 
--- ==========================================================
--- 3. CREACIÓN DE TABLAS DE DOMINIO (Catálogos)
--- ==========================================================
+
+-- 3. CREACIÓN DE TABLAS DE DOMINIO 
+
 CREATE TABLE especialidad (
     id_especialidad INT AUTO_INCREMENT PRIMARY KEY,
     nom_especialidad VARCHAR(50) UNIQUE NOT NULL
@@ -59,9 +59,9 @@ CREATE TABLE diagnostico (
     descripcion VARCHAR(255) NOT NULL
 );
 
--- ==========================================================
--- 4. CREACIÓN DE TABLAS MAESTRAS (Ya conectadas con Usuarios)
--- ==========================================================
+
+-- 4. CREACIÓN DE TABLAS MAESTRAS 
+
 CREATE TABLE paciente (
     rut_paciente VARCHAR(12) PRIMARY KEY,
     nom_completo VARCHAR(100) NOT NULL,
@@ -83,9 +83,9 @@ CREATE TABLE medico (
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
--- ==========================================================
+
 -- 5. CREACIÓN DE TABLAS TRANSACCIONALES Y RELACIONES
--- ==========================================================
+
 CREATE TABLE cita (
     id_cita INT AUTO_INCREMENT PRIMARY KEY,
     fecha_hora DATETIME NOT NULL, 
@@ -142,9 +142,9 @@ CREATE TABLE atencion_diagnostico (
     FOREIGN KEY (codigo_cie10) REFERENCES diagnostico(codigo_cie10) ON DELETE CASCADE
 );
 
--- ==========================================================
+
 -- 6. POBLAMIENTO DE DATOS ESTÁTICOS Y USUARIOS BASE
--- ==========================================================
+
 INSERT INTO rol (nombre_rol) VALUES ('Paciente'), ('Médico'), ('Administrador');
 
 -- Usuario Administrador por defecto
@@ -220,9 +220,9 @@ INSERT IGNORE INTO medico_especialidad (rut_medico, id_especialidad) SELECT rut_
 INSERT INTO medico_centro (rut_medico, codigo_interno) SELECT rut_medico, CONCAT('CM', FLOOR(1 + (RAND() * 5))) FROM medico;
 INSERT IGNORE INTO medico_centro (rut_medico, codigo_interno) SELECT rut_medico, CONCAT('CM', FLOOR(1 + (RAND() * 5))) FROM medico WHERE RAND() > 0.5;
 
--- ==========================================================
--- 7. POBLAMIENTO DE DATOS DINÁMICOS Y LÓGICOS (SP)
--- ==========================================================
+
+-- 7. POBLAMIENTO DE DATOS DINÁMICOS Y LÓGICOS 
+
 DELIMITER //
 CREATE PROCEDURE PoblarDatosDinamicos()
 BEGIN
@@ -340,11 +340,11 @@ DELIMITER ;
 CALL PoblarDatosDinamicos();
 DROP PROCEDURE PoblarDatosDinamicos;
 
--- ==========================================================
--- 8. OBJETOS SQL AVANZADOS (TAREA 2)
--- ==========================================================
 
--- A. PROCEDIMIENTO ALMACENADO (Panel de Gestión - Administrador)
+-- 8. OBJETOS SQL AVANZADOS 
+
+
+-- A. PROCEDIMIENTO ALMACENADO 
 -- Calcula estadísticas por centro y el top 5 de diagnósticos.
 DELIMITER //
 
