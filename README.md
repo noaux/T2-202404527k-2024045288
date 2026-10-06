@@ -13,17 +13,17 @@
 Para hacer funcionar correctamente nuestro proyecto trabajamos con XAMMP (MariaDB), porfavor siga estos pasos:
 
 1. **Preparar la Base de Datos:**
-   * Abra su gestor de MySQL (por ejemplo, phpMyAdmin).
+   * Abra su gestor de MySQL.
    * Cree una base de datos nueva llamada `salud_usm` (con cotejamiento utf8mb4 preferentemente).
    * Importe el archivo `base.sql` proporcionado en la carpeta `BD`. 
    * *Nota:* El script está diseñado para ejecutarse limpiamente. Borrará tablas existentes, creará la estructura nueva y ejecutará automáticamente un procedimiento almacenado (`PoblarDatosDinamicos`) que generará los pacientes, citas médicas, diagnósticos y recetas de prueba de forma aleatoria, además de los datos estáticos obligatorios.
 
 2. **Preparar el Servidor Web:**
-   * Mueva la carpeta con los archivos `.php` al directorio raíz de su servidor web (ej. `C:\xampp\htdocs\Tarea_2`).
+   * Mueva la carpeta con los archivos `.php` junto con la imagen `.jpg` al directorio raíz de su servidor web.
    * Verifique que en el archivo `conexion.php` las credenciales correspondan a las de su servidor local (por defecto `root` sin contraseña).
 
 3. **Ejecutar la Plataforma:**
-   * Abra su navegador web e ingrese a la ruta del proyecto: `http://localhost/Tarea_2/login.php` (ajuste el nombre de la carpeta según corresponda).
+   * Abra su navegador web e ingrese a la ruta del proyecto: `http://localhost/T2-2024045288-202404527K/login.php`.
 
 ---
 
