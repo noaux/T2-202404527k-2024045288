@@ -27,7 +27,7 @@ Para hacer funcionar correctamente nuestro proyecto trabajamos con XAMMP (MariaD
 
 ---
 
-## 3. Credenciales de Acceso (Usuarios de Prueba)
+## 3. Credenciales de Acceso 
 El script de base de datos genera usuarios listos para probar los tres roles del sistema. A continuación, los accesos principales:
 
 * **ROL 3 - Administrador de SaludUSM**
@@ -44,9 +44,9 @@ El script de base de datos genera usuarios listos para probar los tres roles del
 
 ---
 
-## 4. Definiciones y Reglas de Negocio (Backend)
+## 4. Definiciones y Reglas de Negocio 
 
-* **Requisitos de Contraseña (Registro):** 
+* **Requisitos de Contraseña:** 
   Para registrar a un nuevo paciente, la contraseña debe cumplir estrictamente con los siguientes requisitos definidos en el sistema:
   1. Longitud mínima de **8 caracteres**.
   2. Al menos **una letra mayúscula**.
@@ -55,7 +55,7 @@ El script de base de datos genera usuarios listos para probar los tres roles del
 * **Horarios de Atención y Duración de Bloques:**
   * **Horario de atención:** De 09:00 a 17:00 hrs.
   * **Duración del bloque:** Cada cita tiene una duración exacta de **1 hora** (bloques cerrados: 09:00, 10:00, 11:00, etc.).
-  * **Disponibilidad:** El algoritmo de agendamiento (`agendar_cita.php`) excluye automáticamente los fines de semana (sábados y domingos) y proyecta los horarios disponibles del médico para los próximos **7 días hábiles**.
+  * **Disponibilidad:** El algoritmo de agendamiento (`agendar_cita.php`) excluye automáticamente los fines de semana   y proyecta los horarios disponibles del médico para los próximos **7 días hábiles**.
 
 ---
 
@@ -77,6 +77,4 @@ El script de base de datos genera usuarios listos para probar los tres roles del
 ## 6. Supuestos Asumidos
 
 1. **Jornada Laboral y Agendamiento:** Se asumió que los recintos médicos solo operan de lunes a viernes y que las citas se atienden siempre en el minuto 00 (horas en punto).
-2. **Generación de Datos de Prueba:** Se asumió que el uso de un Procedimiento Almacenado de MySQL (`PoblarDatosDinamicos`) era la mejor vía para cumplir con la cuota de poblamiento solicitada (40 pacientes, 150 citas, recetas, etc.) permitiendo a su vez evaluar el script limpiamente sin cargar archivos SQL pesados.
-3. **Zonas Horarias:** Se asumió en todo el código PHP la zona horaria `America/Santiago` mediante `date_default_timezone_set()` para evitar desfases con la ejecución de citas vencidas.
-4. **Roles del Sistema:** Se asumió que solo los pacientes requieren auto-registro vía web. Las cuentas de los médicos son generadas internamente por el Administrador a través del panel de gestión.
+2. **Zonas Horarias:** Se asumió en todo el código PHP la zona horaria `America/Santiago` mediante `date_default_timezone_set()` para evitar desfases con la ejecución de citas vencidas.
