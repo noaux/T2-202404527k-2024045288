@@ -10,7 +10,7 @@
 ---
 
 ## 2. Instrucciones de Ejecución
-Para hacer funcionar correctamente este proyecto en un entorno local (como XAMPP, WAMP o MAMP), siga estos pasos:
+Para hacer funcionar correctamente nuestro proyecto trabajamos con XAMMP (MariaDB), porfavor siga estos pasos:
 
 1. **Preparar la Base de Datos:**
    * Abra su gestor de MySQL (por ejemplo, phpMyAdmin).
